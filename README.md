@@ -17,3 +17,9 @@ https://yagi.fi/
 *Testing with large array sizes: Making sure the results are consistent and obtained in short time with large arrays
 
 *Providing a front end for choosing the crypto pair for retrieving the feeds (i.e. BTC/USDT, BTC/ USD, etc.)
+
+The contract is deployed at the following address:
+
+0x04612450a5c70b73a0cb55e283dad6fd6fe037da9d252ebac80fec7526eeb2ff
+
+https://goerli.voyager.online/contract/0x04612450a5c70b73a0cb55e283dad6fd6fe037da9d252ebac80fec7526eeb2ff#readContract
