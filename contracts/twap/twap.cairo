@@ -41,6 +41,16 @@ func get_historical_prices_len{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
     let (len) = historical_prices_len.read()
     return (res=len)
 end
+
+@view
+func get_last_tick{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
+    p : felt, t : felt
+):
+    alloc_locals
+    let (len) = historical_prices_len.read()
+    let (local last_tick : Tick) = historical_prices.read(len - 1)
+    return (p=last_tick.p, t=last_tick.t)
+end
 # Your function
 @external
 func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}(
@@ -106,20 +116,6 @@ func get_ticks_array_loop{
         tempvar corrected_index = corrected_index
     end
 
-    let (storage_map_0) = historical_prices.read(0)
-    let map_0 = storage_map_0.p
-    let (storage_map_1) = historical_prices.read(1)
-    let map_1 = storage_map_1.p
-
-    let (storage_map_2) = historical_prices.read(2)
-    let map_2 = storage_map_2.p
-
-    let (storage_map_3) = historical_prices.read(3)
-    let map_3 = storage_map_3.p
-
-    let (storage_map_4) = historical_prices.read(4)
-    let map_4 = storage_map_4.p
-
     let (local current_tick : Tick) = historical_prices.read(corrected_index)
 
     assert ticks_array[index] = current_tick
@@ -134,12 +130,17 @@ func twap{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}() -
     alloc_locals
     local ticks_array : Tick*
     let (ticks_array_len, ticks_array) = get_ticks_array()
+    if ticks_array_len == 0:
+        return (twap_value=0)
+    end
     let sum_pi_ti = 0
     let sum_ti = 0
     with sum_pi_ti, sum_ti, ticks_array, ticks_array_len:
         twap_loop(0)
     end
-    let twap = sum_pi_ti / sum_ti
+    let (twap, remainder) = unsigned_div_rem(sum_pi_ti, sum_ti)
+
+    # let twap = sum_pi_ti / sum_ti
     return (twap_value=twap)
 end
 
@@ -164,31 +165,5 @@ func twap_loop{
     let sum_pi_ti = sum_pi_ti + p1 * delta_t
     let sum_ti = sum_ti + delta_t
     twap_loop(index + 1)
-    return ()
-end
-
-@view
-func array_sum{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}() -> (sum : felt):
-    alloc_locals
-    local ticks_array : Tick*
-    let (_, ticks_array) = get_ticks_array()
-    let (ticks_len) = historical_prices_len.read()
-
-    let res = 0
-    with res:
-        array_sum_loop(ticks_array, ticks_len, 0)
-    end
-    return (sum=res)
-end
-
-func array_sum_loop{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*, res : felt}(
-    ticks_array : Tick*, ticks_array_len : felt, index : felt
-):
-    if index == ticks_array_len:
-        return ()
-    end
-    let p = ticks_array[index].p
-    let res = res + p
-    array_sum_loop(ticks_array, ticks_array_len, index + 1)
     return ()
 end

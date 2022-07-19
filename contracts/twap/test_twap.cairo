@@ -3,7 +3,7 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.default_dict import default_dict_new, default_dict_finalize
 from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.dict import dict_write, dict_read
-from contracts.empiric.twap import (
+from contracts.twap.twap import (
     get_ticks_array,
     update_historical_ticks,
     get_historical_prices_len,
@@ -109,7 +109,7 @@ func test_larger_than_window_historical_ticks_update{
 end
 
 @external
-func test_vwap{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+func test_twap{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1100,10, 1, 1] ) %}
     update_historical_ticks()
     %{ stop_mock() %}
