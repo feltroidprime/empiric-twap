@@ -18,5 +18,5 @@ https://yagi.fi/
 
 *Providing a front end for choosing the crypto pair for retrieving the feeds (i.e. BTC/USDT, BTC/ USD, etc.)
 
-
-deployed contract : https://goerli.voyager.online/contract/0x04612450a5c70b73a0cb55e283dad6fd6fe037da9d252ebac80fec7526eeb2ff#readContract
+The contract is deployed at the following address:
+https://goerli.voyager.online/contract/0x04612450a5c70b73a0cb55e283dad6fd6fe037da9d252ebac80fec7526eeb2ff#readContract
