@@ -6,6 +6,8 @@ from contracts.twap_debug.twap_debug import (
     update_historical_ticks,
     get_historical_prices_len,
     twap,
+    array_sum,
+    square_array_sum,
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
@@ -131,5 +133,49 @@ func test_twap{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
     %{ stop_mock() %}
     let (twap_res) = twap()
     assert twap_res = (1700 + 1600 + 1500 + 1400) / 4
+    return ()
+end
+
+@external
+func test_array_sum{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1100,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1200,10, 2, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1300,10, 3, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1400,10, 4, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1500,10, 5, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    let (sum) = array_sum()
+    assert sum = 1100 + 1200 + 1300 + 1400 + 1500
+    return ()
+end
+
+@external
+func test_square_array_sum{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1100,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1200,10, 2, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1300,10, 3, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1400,10, 4, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1500,10, 5, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    let (sum) = square_array_sum()
+    assert sum = 1100 * 1100 + 1200 * 1200 + 1300 * 1300 + 1400 * 1400 + 1500 * 1500
     return ()
 end

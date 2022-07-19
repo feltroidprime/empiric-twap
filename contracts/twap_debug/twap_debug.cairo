@@ -193,3 +193,31 @@ func array_sum_loop{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBui
     array_sum_loop(ticks_array, ticks_array_len, index + 1)
     return ()
 end
+
+@view
+func square_array_sum{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}() -> (
+    sum : felt
+):
+    alloc_locals
+    local ticks_array : Tick*
+    let (_, ticks_array) = get_ticks_array()
+    let (ticks_len) = historical_prices_len.read()
+
+    let res = 0
+    with res:
+        square_array_sum_loop(ticks_array, ticks_len, 0)
+    end
+    return (sum=res)
+end
+
+func square_array_sum_loop{
+    syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*, res : felt
+}(ticks_array : Tick*, ticks_array_len : felt, index : felt):
+    if index == ticks_array_len:
+        return ()
+    end
+    let p = ticks_array[index].p
+    let res = res + p * p
+    square_array_sum_loop(ticks_array, ticks_array_len, index + 1)
+    return ()
+end
