@@ -8,6 +8,7 @@ from contracts.twap.twap import (
     update_historical_ticks,
     get_historical_prices_len,
     twap,
+    get_tick_at_index,
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
@@ -60,6 +61,57 @@ func test_historical_ticks_updates_ticks_array{
 end
 
 @external
+func test_storage_map_doesnt_go_outside_max_ticks{
+    syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
+}():
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1100,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1200,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1300,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1400,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1500,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1600,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1700,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1800,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1900,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[2000,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+    let (p, t) = get_tick_at_index(5)
+    assert p = 0
+    assert t = 0
+    let (p, t) = get_tick_at_index(6)
+    assert p = 0
+    assert t = 0
+
+    return ()
+end
+@external
 func test_larger_than_window_historical_ticks_update{
     syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*
 }():
@@ -90,6 +142,21 @@ func test_larger_than_window_historical_ticks_update{
     update_historical_ticks()
     %{ stop_mock() %}
 
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1800,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[1900,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[2000,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
+
+    %{ stop_mock = mock_call(ids.EMPIRIC_ORACLE_ADDRESS,'get_value',[2100,10, 1, 1] ) %}
+    update_historical_ticks()
+    %{ stop_mock() %}
     let (_, ticks_array) = get_ticks_array()
 
     let a0 = ticks_array[0].p
@@ -97,13 +164,12 @@ func test_larger_than_window_historical_ticks_update{
     let a2 = ticks_array[2].p
     let a3 = ticks_array[3].p
     let a4 = ticks_array[4].p
-    # let a5 = ticks_array[5].p
     %{ print(ids.a0, ids.a1, ids.a2, ids.a3, ids.a4) %}
-    assert ticks_array[4].p = 1700
-    assert ticks_array[3].p = 1600
-    assert ticks_array[2].p = 1500
-    assert ticks_array[1].p = 1400
-    assert ticks_array[0].p = 1300
+    assert ticks_array[4].p = 2100
+    assert ticks_array[3].p = 2000
+    assert ticks_array[2].p = 1900
+    assert ticks_array[1].p = 1800
+    assert ticks_array[0].p = 1700
 
     return ()
 end

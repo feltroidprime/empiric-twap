@@ -39,6 +39,30 @@ func get_historical_prices_len{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
     let (len) = historical_prices_len.read()
     return (res=len)
 end
+@view
+func get_b{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
+    let (b) = historical_prices_break.read()
+    return (res=b)
+end
+
+@view
+func get_last_tick{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
+    p : felt, t : felt
+):
+    alloc_locals
+    let (len) = historical_prices_len.read()
+    let (local last_tick : Tick) = historical_prices.read(len - 1)
+    return (p=last_tick.p, t=last_tick.t)
+end
+
+@view
+func get_tick_at_index{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    index : felt
+) -> (p : felt, t : felt):
+    alloc_locals
+    let (local last_tick : Tick) = historical_prices.read(index)
+    return (p=last_tick.p, t=last_tick.t)
+end
 # Your function
 @external
 func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}(
@@ -61,15 +85,37 @@ func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr 
         assert new_tick.t = last_updated_timestamp
         assert new_tick.p = eth_price
 
-        let (b) = historical_prices_break.read()
-        let (local before_last_tick : Tick) = historical_prices.read(b + 1)
+        let (local b) = historical_prices_break.read()
+        let (q, r) = unsigned_div_rem(b + 1, MAX_TICKS - 1)
+        if r == 0:
+            tempvar r = 4
+            historical_prices_break.write(0)
+        else:
+            tempvar r = r
+            historical_prices_break.write(b + 1)
+        end
+        let (local before_last_tick : Tick) = historical_prices.read(r)
+
         historical_prices.write(index=0, value=before_last_tick)
 
-        historical_prices.write(index=b + 1, value=new_tick)
-
-        historical_prices_break.write(b + 1)
+        %{ print(f"tick update b+1={ids.b+1}, r = {ids.r}") %}
+        historical_prices.write(index=r, value=new_tick)
     end
+    let (storage_map_0) = historical_prices.read(0)
+    let map_0 = storage_map_0.p
+    let (storage_map_1) = historical_prices.read(1)
+    let map_1 = storage_map_1.p
 
+    let (storage_map_2) = historical_prices.read(2)
+    let map_2 = storage_map_2.p
+
+    let (storage_map_3) = historical_prices.read(3)
+    let map_3 = storage_map_3.p
+
+    let (storage_map_4) = historical_prices.read(4)
+    let map_4 = storage_map_4.p
+
+    %{ print(f"storage_map {ids.map_0}, {ids.map_1}, {ids.map_2}, {ids.map_3}, {ids.map_4}") %}
     return (eth_price)
 end
 
@@ -86,6 +132,21 @@ func get_ticks_array{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBu
     with break:
         get_ticks_array_loop(ticks, ticks_array_len, 1)
     end
+    let (storage_map_0) = historical_prices.read(0)
+    let map_0 = storage_map_0.p
+    let (storage_map_1) = historical_prices.read(1)
+    let map_1 = storage_map_1.p
+
+    let (storage_map_2) = historical_prices.read(2)
+    let map_2 = storage_map_2.p
+
+    let (storage_map_3) = historical_prices.read(3)
+    let map_3 = storage_map_3.p
+
+    let (storage_map_4) = historical_prices.read(4)
+    let map_4 = storage_map_4.p
+
+    %{ print(f"storage_map {ids.map_0}, {ids.map_1}, {ids.map_2}, {ids.map_3}, {ids.map_4}") %}
     return (ticks_array_len, ticks)
 end
 
@@ -105,21 +166,21 @@ func get_ticks_array_loop{
     end
     %{ print(f" Index {ids.index} / corrected index {ids.corrected_index} ") %}
 
-    let (storage_map_0) = historical_prices.read(0)
-    let map_0 = storage_map_0.p
-    let (storage_map_1) = historical_prices.read(1)
-    let map_1 = storage_map_1.p
+    # let (storage_map_0) = historical_prices.read(0)
+    # let map_0 = storage_map_0.p
+    # let (storage_map_1) = historical_prices.read(1)
+    # let map_1 = storage_map_1.p
 
-    let (storage_map_2) = historical_prices.read(2)
-    let map_2 = storage_map_2.p
+    # let (storage_map_2) = historical_prices.read(2)
+    # let map_2 = storage_map_2.p
 
-    let (storage_map_3) = historical_prices.read(3)
-    let map_3 = storage_map_3.p
+    # let (storage_map_3) = historical_prices.read(3)
+    # let map_3 = storage_map_3.p
 
-    let (storage_map_4) = historical_prices.read(4)
-    let map_4 = storage_map_4.p
+    # let (storage_map_4) = historical_prices.read(4)
+    # let map_4 = storage_map_4.p
 
-    %{ print(f"storage_map {ids.map_0}, {ids.map_1}, {ids.map_2}, {ids.map_3}, {ids.map_4}") %}
+    # %{ print(f"storage_map {ids.map_0}, {ids.map_1}, {ids.map_2}, {ids.map_3}, {ids.map_4}") %}
 
     let (local current_tick : Tick) = historical_prices.read(corrected_index)
 

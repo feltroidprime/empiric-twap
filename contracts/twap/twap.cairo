@@ -51,6 +51,14 @@ func get_last_tick{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check
     let (local last_tick : Tick) = historical_prices.read(len - 1)
     return (p=last_tick.p, t=last_tick.t)
 end
+@view
+func get_tick_at_index{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    index : felt
+) -> (p : felt, t : felt):
+    alloc_locals
+    let (local last_tick : Tick) = historical_prices.read(index)
+    return (p=last_tick.p, t=last_tick.t)
+end
 # Your function
 @external
 func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}(
@@ -73,13 +81,20 @@ func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr 
         assert new_tick.t = last_updated_timestamp
         assert new_tick.p = eth_price
 
-        let (b) = historical_prices_break.read()
-        let (local before_last_tick : Tick) = historical_prices.read(b + 1)
+        let (local b) = historical_prices_break.read()
+        let (q, r) = unsigned_div_rem(b + 1, MAX_TICKS - 1)
+        if r == 0:
+            tempvar r = 4
+            historical_prices_break.write(0)
+        else:
+            tempvar r = r
+            historical_prices_break.write(b + 1)
+        end
+        let (local before_last_tick : Tick) = historical_prices.read(r)
+
         historical_prices.write(index=0, value=before_last_tick)
 
-        historical_prices.write(index=b + 1, value=new_tick)
-
-        historical_prices_break.write(b + 1)
+        historical_prices.write(index=r, value=new_tick)
     end
 
     return (eth_price)
