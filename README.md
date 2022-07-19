@@ -1,4 +1,4 @@
-# Repo12
+# Empiric Computational Price Feeds - Starknet Hackhaton 19.07.2022
 
 Empiric Network goes beyond price feeds. Advanced computational fields are needed in Defi, in a similar manner to what Traditional Finance already has. Thanks to Empiric, these computational fields can be built in a secure and verifiable manner.
 
