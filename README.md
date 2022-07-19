@@ -1,3 +1,5 @@
+# Repo12
+
 Empiric Network goes beyond price feeds. Advanced computational fields are needed in Defi, in a similar manner to what Traditional Finance already has. Thanks to Empiric, these computational fields can be built in a secure and verifiable manner.
 
 Our project for this hackhaton is centered on providing TWAP feed. TWAP is a pricing methodology that calculates the mean price of an asset during a specified period of time. For example, a “one-day TWAP” means taking the average price over a defined day of time.
