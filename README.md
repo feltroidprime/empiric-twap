@@ -52,6 +52,6 @@ https://yagi.fi/
 
 The contract is deployed at the following address:
 
-0x04612450a5c70b73a0cb55e283dad6fd6fe037da9d252ebac80fec7526eeb2ff
+0x03d65b4d1baa11124b469d6bb6a4fa4d160efda1984fd9e384c07c81708f1126
 
-https://goerli.voyager.online/contract/0x04612450a5c70b73a0cb55e283dad6fd6fe037da9d252ebac80fec7526eeb2ff#readContract
+https://goerli.voyager.online/contract/0x03d65b4d1baa11124b469d6bb6a4fa4d160efda1984fd9e384c07c81708f1126#readContract
