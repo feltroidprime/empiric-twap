@@ -8,7 +8,6 @@ from contracts.twap_debug.twap_debug import (
     twap,
     array_sum,
     square_array_sum,
-    get_b,
     get_tick_at_index,
 )
 from starkware.cairo.common.cairo_builtins import HashBuiltin

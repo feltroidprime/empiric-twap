@@ -39,11 +39,6 @@ func get_historical_prices_len{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
     let (len) = historical_prices_len.read()
     return (res=len)
 end
-@view
-func get_b{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
-    let (b) = trailing_index.read()
-    return (res=b)
-end
 
 @view
 func get_last_tick{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
