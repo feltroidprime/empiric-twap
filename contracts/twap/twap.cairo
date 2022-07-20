@@ -69,6 +69,7 @@ func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr 
     let (i) = historical_prices_len.read()
     let (inferior) = is_le(i, MAX_TICKS - 1)
     if inferior == 1:
+        # The window is not full yet, just add the newest value
         local new_tick : Tick
         assert new_tick.t = last_updated_timestamp
         assert new_tick.p = eth_price
@@ -76,6 +77,7 @@ func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr 
 
         historical_prices_len.write(value=i + 1)
     else:
+        # The window is full, get rid of the oldest value and insert the newest one
         local new_tick : Tick
         assert new_tick.t = last_updated_timestamp
         assert new_tick.p = eth_price
