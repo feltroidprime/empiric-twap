@@ -28,7 +28,7 @@ This rolling window principle stored in the storage map of the contract is usefu
 
 
 ### How to test it locally 
-Install [Protostar](https://github.com/software-mansion/protostar)  Clone the repository. Use python 3.7. 
+Install [Protostar](https://github.com/software-mansion/protostar).  Clone the repository. Use python 3.7. 
 ```bash
 python -m venv env
 source env/bin/activate
