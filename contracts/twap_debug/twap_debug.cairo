@@ -22,7 +22,7 @@ end
 func historical_prices_len() -> (len : felt):
 end
 @storage_var
-func historical_prices_break() -> (break : felt):
+func trailing_index() -> (break : felt):
 end
 
 @contract_interface
@@ -41,7 +41,7 @@ func get_historical_prices_len{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
 end
 @view
 func get_b{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (res : felt):
-    let (b) = historical_prices_break.read()
+    let (b) = trailing_index.read()
     return (res=b)
 end
 
@@ -85,14 +85,14 @@ func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr 
         assert new_tick.t = last_updated_timestamp
         assert new_tick.p = eth_price
 
-        let (local b) = historical_prices_break.read()
+        let (local b) = trailing_index.read()
         let (q, r) = unsigned_div_rem(b + 1, MAX_TICKS - 1)
         if r == 0:
             tempvar r = 4
-            historical_prices_break.write(0)
+            trailing_index.write(0)
         else:
             tempvar r = r
-            historical_prices_break.write(b + 1)
+            trailing_index.write(b + 1)
         end
         let (local before_last_tick : Tick) = historical_prices.read(r)
 
@@ -128,7 +128,7 @@ func get_ticks_array{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBu
     let (ticks_array_len) = historical_prices_len.read()
     let (local first_tick : Tick) = historical_prices.read(0)
     assert ticks[0] = first_tick
-    let (local break : felt) = historical_prices_break.read()
+    let (local break : felt) = trailing_index.read()
     with break:
         get_ticks_array_loop(ticks, ticks_array_len, 1)
     end
