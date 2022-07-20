@@ -61,8 +61,7 @@ func get_tick_at_index{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_c
 end
 # Your function
 @external
-func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}(
-    ) -> (answer : felt):
+func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr : HashBuiltin*}():
     alloc_locals
     let (
         eth_price, decimals, last_updated_timestamp, num_sources_aggregated
@@ -97,7 +96,7 @@ func update_historical_ticks{syscall_ptr : felt*, range_check_ptr, pedersen_ptr 
         historical_prices.write(index=r, value=new_tick)
     end
 
-    return (eth_price)
+    return ()
 end
 
 @external
